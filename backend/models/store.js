@@ -3,12 +3,26 @@ const { v4: uuidv4 } = require("uuid");
 const bcrypt = require("bcryptjs");
 
 // ─── Users ───────────────────────────────────────────────────────────────────
+// The admin password is private: set ADMIN_PASSWORD in the backend environment.
+// Local development falls back to "admin123". In production without it, the
+// admin account gets a random password, so nobody can sign in as admin.
+const crypto = require("crypto");
+const adminPassword = (() => {
+  const fromEnv = process.env.ADMIN_PASSWORD?.trim();
+  if (fromEnv) return fromEnv;
+  if (process.env.NODE_ENV === "production") {
+    console.warn("[auth] ADMIN_PASSWORD is not set: admin sign-in is disabled until it is.");
+    return crypto.randomBytes(24).toString("hex");
+  }
+  return "admin123";
+})();
+
 const users = [
   {
     id: "user-1",
     name: "Admin User",
     email: "admin@example.com",
-    password: bcrypt.hashSync("admin123", 10),
+    password: bcrypt.hashSync(adminPassword, 10),
     role: "admin",
     createdAt: new Date("2024-01-01").toISOString(),
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=admin",

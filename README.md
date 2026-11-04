@@ -80,6 +80,7 @@ Or run `start.bat` on Windows to start both.
 |----------|----------------------|---------|
 | backend  | `JWT_SECRET`         | Signs access tokens. **Required in production.** |
 | backend  | `JWT_REFRESH_SECRET` | Signs refresh tokens. **Required in production.** |
+| backend  | `ADMIN_PASSWORD`     | Private password for admin@example.com. **Set this in production**; without it admin sign-in is disabled. |
 | backend  | `FRONTEND_URL`       | Allowed CORS origin |
 | frontend | `BACKEND_URL`        | URL of the Express API (server-side only) |
 | frontend | `JWT_SECRET`         | **Same value as the backend's `JWT_SECRET`.** Used by the middleware to verify sessions. If it is missing in production, every protected page redirects to sign-in. |
@@ -92,10 +93,10 @@ In local development both apps fall back to a shared dev secret, so no `.env` fi
 
 | Role  | Email               | Password    |
 |-------|---------------------|-------------|
-| Admin | admin@example.com   | admin123    |
 | User  | john@example.com    | password123 |
+| Admin | admin@example.com   | Set privately with `ADMIN_PASSWORD` on the backend (local dev default: `admin123`) |
 
-> Or use the demo buttons on the sign-in page.
+> The sign-in page offers a one-click demo shopper account. The admin login is never shown publicly; if `ADMIN_PASSWORD` is not set in production, admin sign-in is disabled.
 
 ---
 
