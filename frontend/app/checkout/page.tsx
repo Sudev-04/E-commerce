@@ -137,15 +137,15 @@ function CheckoutForm() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="fullName" className="text-sm font-medium text-gray-700 block mb-1.5">Full name</label>
-                <input id="fullName" className="input-field" value={address.fullName} onChange={set("fullName")} placeholder={user?.name || "Your name"} required autoComplete="name" />
+                <input id="fullName" className="input-field" value={address.fullName} onChange={set("fullName")} required autoComplete="name" />
               </div>
               <div>
                 <label htmlFor="phone" className="text-sm font-medium text-gray-700 block mb-1.5">Mobile number</label>
-                <input id="phone" className="input-field" value={address.phone} onChange={set("phone")} placeholder="10-digit mobile number" required inputMode="numeric" pattern="[6-9][0-9]{9}" maxLength={10} title="Enter a valid 10-digit Indian mobile number" autoComplete="tel-national" />
+                <input id="phone" className="input-field" value={address.phone} onChange={set("phone")} required inputMode="numeric" pattern="[6-9][0-9]{9}" maxLength={10} title="Enter a valid 10-digit Indian mobile number" autoComplete="tel-national" />
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="line1" className="text-sm font-medium text-gray-700 block mb-1.5">Address</label>
-                <input id="line1" className="input-field" value={address.line1} onChange={set("line1")} placeholder="House no., building, street" required autoComplete="address-line1" />
+                <input id="line1" className="input-field" value={address.line1} onChange={set("line1")} required autoComplete="address-line1" />
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="line2" className="text-sm font-medium text-gray-700 block mb-1.5">Landmark / Area <span className="text-gray-400 font-normal">(optional)</span></label>

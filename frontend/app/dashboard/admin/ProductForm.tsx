@@ -143,7 +143,7 @@ export default function ProductForm({ product, onCancel, onSave }: Props) {
           </div>
           <div className="sm:col-span-2">
             <label htmlFor="pf-tags" className="text-sm font-medium text-gray-700 block mb-1.5">Tags <span className="text-gray-400 font-normal">(comma separated)</span></label>
-            <input id="pf-tags" className="input-field" value={form.tags} onChange={set("tags")} placeholder="wireless, bluetooth" />
+            <input id="pf-tags" className="input-field" value={form.tags} onChange={set("tags")} />
           </div>
 
           {error && <div role="alert" className="sm:col-span-2 bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 text-sm">{error}</div>}

@@ -60,19 +60,19 @@ function RegisterForm() {
         <div>
           <label htmlFor="name" className="text-sm font-medium text-gray-700 block mb-1.5">Full name</label>
           <input id="name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="input-field" placeholder="Priya Sharma" required minLength={2} maxLength={50} autoComplete="name" />
+            className="input-field" required minLength={2} maxLength={50} autoComplete="name" />
         </div>
         <div>
           <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1.5">Email</label>
           <input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="input-field" placeholder="you@example.com" required autoComplete="email" />
+            className="input-field" required autoComplete="email" />
         </div>
         <div>
-          <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1.5">Password</label>
+          <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1.5">Password <span className="text-gray-400 font-normal">(at least 6 characters)</span></label>
           <div className="relative">
             <input id="password" type={showPassword ? "text" : "password"} value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="input-field pr-10" placeholder="At least 6 characters" required minLength={6} autoComplete="new-password" />
+              className="input-field pr-10" required minLength={6} autoComplete="new-password" />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -84,7 +84,7 @@ function RegisterForm() {
           <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 block mb-1.5">Confirm password</label>
           <input id="confirmPassword" type="password" value={form.confirmPassword}
             onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
-            className="input-field" placeholder="Repeat password" required autoComplete="new-password" />
+            className="input-field" required autoComplete="new-password" />
         </div>
 
         <button type="submit" disabled={loading} aria-busy={loading} className="btn-primary w-full flex items-center justify-center gap-2 py-3 mt-2 disabled:opacity-80">
