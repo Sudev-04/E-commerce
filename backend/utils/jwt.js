@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 // fallback keeps `npm run dev` working out of the box (see backend/.env.example).
 const DEV_FALLBACK = "dev-only-secret-change-me";
 const getSecret = (name) => {
-  const value = process.env[name];
+  // Trim: dashboards easily save a pasted secret with a trailing newline/space
+  const value = process.env[name]?.trim();
   if (value) return value;
   if (process.env.NODE_ENV === "production") {
     throw new Error(`${name} is not set. Add it to the backend environment.`);

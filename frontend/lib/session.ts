@@ -35,7 +35,8 @@ export interface SessionClaims {
 // Must match the backend's secret. The dev fallback mirrors backend/utils/jwt.js.
 let warnedMissingSecret = false;
 function accessSecret() {
-  let secret = process.env.JWT_SECRET;
+  // Trim: dashboards easily save a pasted secret with a trailing newline/space
+  let secret = process.env.JWT_SECRET?.trim();
   if (!secret) {
     if (process.env.NODE_ENV === "production") {
       if (!warnedMissingSecret) {
