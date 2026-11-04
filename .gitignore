@@ -43,3 +43,6 @@ Thumbs.db
 *.tmp
 *.swp
 
+
+# TypeScript incremental build cache
+*.tsbuildinfo
