@@ -84,7 +84,7 @@ function LoginForm() {
         <div>
           <label htmlFor="email" className="text-sm font-medium text-gray-700 block mb-1.5">Email</label>
           <input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="input-field" placeholder="you@example.com" required autoComplete="email" />
+            className="input-field" required autoComplete="email" />
         </div>
 
         <div>
@@ -92,7 +92,7 @@ function LoginForm() {
           <div className="relative">
             <input id="password" type={showPassword ? "text" : "password"} value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="input-field pr-10" placeholder="••••••••" required autoComplete="current-password" />
+              className="input-field pr-10" required autoComplete="current-password" />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
