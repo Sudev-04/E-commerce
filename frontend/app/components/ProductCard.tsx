@@ -65,7 +65,11 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
         <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
           {discount > 0 && <span className="badge bg-sale text-white">{discount}% off</span>}
-          {product.featured && <span className="badge bg-accent-400 text-ink">Featured</span>}
+          {product.deal ? (
+            <span className="badge bg-accent-400 text-ink font-semibold">Today&apos;s Deal</span>
+          ) : (
+            product.featured && <span className="badge bg-primary-100 text-primary-700">Featured</span>
+          )}
         </div>
 
         {product.stock <= 5 && product.stock > 0 && (
@@ -124,6 +128,12 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             )}
           </button>
         </div>
+
+        {product.deal && (
+          <p className="text-xs font-semibold text-accent-700">
+            Extra {product.deal.extraPercent}% off today · Free delivery
+          </p>
+        )}
 
         {inCart && (
           <p className="text-xs font-medium text-green-700 flex items-center gap-1">

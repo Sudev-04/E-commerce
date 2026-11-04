@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/products?category=electronics", label: "Electronics" },
   { href: "/products?category=fashion", label: "Fashion" },
   { href: "/products?category=home", label: "Home & Kitchen" },
+  { href: "/products?deals=true", label: "Today's Deals" },
 ];
 
 function SearchForm({ onDone, autoFocus = false }: { onDone?: () => void; autoFocus?: boolean }) {
@@ -79,7 +80,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav aria-label="Main" className="hidden lg:flex items-center gap-5">
+          <nav aria-label="Main" className="hidden xl:flex items-center gap-5">
             {NAV_LINKS.map(({ href, label }) => (
               <Link key={href} href={href} className="text-gray-600 hover:text-primary-600 font-medium text-sm transition-colors whitespace-nowrap">
                 {label}
@@ -174,7 +175,7 @@ export default function Navbar() {
             {/* Mobile Menu Toggle */}
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className="icon-btn lg:hidden"
+              className="icon-btn xl:hidden"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
             >
@@ -193,7 +194,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <nav aria-label="Mobile" className="lg:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-1">
+        <nav aria-label="Mobile" className="xl:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-1">
           {[...NAV_LINKS, { href: "/products?category=sports", label: "Sports & Fitness" }, { href: "/products?category=furniture", label: "Furniture" }].map(({ href, label }) => (
             <Link key={href} href={href} className="block py-2 text-gray-700 hover:text-primary-600 font-medium">
               {label}

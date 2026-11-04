@@ -13,6 +13,17 @@ export interface Product {
   tags: string[];
   featured: boolean;
   createdAt: string;
+  /** Present when the product is one of Today's Deals; `price` already includes it. */
+  deal?: ProductDeal;
+}
+
+export interface ProductDeal {
+  extraPercent: number;
+  /** Price before today's extra discount */
+  basePrice: number;
+  freeDelivery: boolean;
+  /** When today's deals end (midnight India time) */
+  endsAt: string;
 }
 
 export interface User {
@@ -32,6 +43,8 @@ export interface CartItem {
   quantity: number;
   /** Known stock for guest-cart items (used to cap quantities client-side). */
   stock?: number;
+  /** Today's Deal item: the whole order ships free */
+  freeDelivery?: boolean;
 }
 
 export interface Cart {
@@ -67,10 +80,17 @@ export interface Order {
   cancelledAt?: string;
 }
 
+export interface SearchNote {
+  /** "corrected": a typo was fixed; "related": no exact match, closest items shown */
+  type: "corrected" | "related";
+  query: string | null;
+}
+
 export interface PaginatedResponse<T> {
   success: boolean;
   message: string;
   data: T[];
+  searchNote?: SearchNote | null;
   pagination: {
     total: number;
     page: number;

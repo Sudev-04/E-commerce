@@ -16,6 +16,7 @@ type SearchParams = {
   minPrice?: string;
   maxPrice?: string;
   featured?: string;
+  deals?: string;
   page?: string;
 };
 
@@ -23,13 +24,22 @@ interface PageProps {
   searchParams: SearchParams;
 }
 
-const pageTitle = (sp: SearchParams) =>
-  sp.category ? formatCategory(sp.category) : sp.featured === "true" ? "Featured Products" : sp.search ? `Results for "${sp.search}"` : "All Products";
+const isDeals = (sp: SearchParams) => sp.deals === "true";
+
+const pageTitle = (sp: SearchParams) => {
+  if (isDeals(sp)) return sp.category ? `${formatCategory(sp.category)} Deals` : "Today's Deals";
+  if (sp.category) return formatCategory(sp.category);
+  if (sp.featured === "true") return "Featured Products";
+  if (sp.search) return `Results for "${sp.search}"`;
+  return "All Products";
+};
 
 export function generateMetadata({ searchParams }: PageProps): Metadata {
   return {
     title: pageTitle(searchParams),
-    description: searchParams.category
+    description: isDeals(searchParams)
+      ? "Today's Deals at ShopNext: extra 10–20% off and free delivery on hand-picked products. New deals every day."
+      : searchParams.category
       ? `Shop ${formatCategory(searchParams.category)} at ShopNext. Free delivery on orders over ₹499.`
       : "Browse the full ShopNext catalogue: electronics, fashion, home & kitchen, furniture, sports and accessories.",
   };
@@ -39,7 +49,7 @@ const LIMIT = 12;
 
 function buildParams(sp: SearchParams, page: number): Record<string, string> {
   const params: Record<string, string> = { page: String(page), limit: String(LIMIT) };
-  for (const key of ["category", "search", "sort", "minPrice", "maxPrice", "featured"] as const) {
+  for (const key of ["category", "search", "sort", "minPrice", "maxPrice", "featured", "deals"] as const) {
     if (sp[key]) params[key] = sp[key]!;
   }
   return params;
@@ -87,9 +97,24 @@ async function ProductResults({ searchParams }: { searchParams: SearchParams }) 
 
   return (
     <>
+      {data.searchNote && searchParams.search && (
+        <div role="status" className="bg-primary-50 border border-primary-100 text-primary-900 rounded-lg px-3 py-2 mb-3 text-sm">
+          {data.searchNote.type === "corrected" && data.searchNote.query ? (
+            <>
+              Showing results for <span className="font-semibold">&ldquo;{data.searchNote.query}&rdquo;</span>.
+              {" "}No exact matches for &ldquo;{searchParams.search}&rdquo;.
+            </>
+          ) : (
+            <>
+              No exact matches for &ldquo;{searchParams.search}&rdquo;. Showing related items
+              {data.searchNote.query ? <> for <span className="font-semibold">&ldquo;{data.searchNote.query}&rdquo;</span></> : null}.
+            </>
+          )}
+        </div>
+      )}
       <p className="text-gray-500 text-sm mb-4" aria-live="polite">
         {pluralize(pagination?.total ?? 0, "product")} found
-        {searchParams.search && ` for "${searchParams.search}"`}
+        {searchParams.search && !data.searchNote && ` for "${searchParams.search}"`}
         {priceNote}
       </p>
 
@@ -154,11 +179,11 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-gray-500 mb-3">
         <Link href="/" className="hover:text-primary-600">Home</Link>
         <span aria-hidden="true">/</span>
-        {searchParams.category ? (
+        {searchParams.category || isDeals(searchParams) ? (
           <>
             <Link href="/products" className="hover:text-primary-600">Products</Link>
             <span aria-hidden="true">/</span>
-            <span className="text-gray-900 font-medium">{formatCategory(searchParams.category)}</span>
+            <span className="text-gray-900 font-medium">{pageTitle(searchParams)}</span>
           </>
         ) : (
           <span className="text-gray-900 font-medium">Products</span>
@@ -166,6 +191,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       </nav>
 
       <h1 className="text-2xl font-bold text-gray-900 mb-1">{pageTitle(searchParams)}</h1>
+      {isDeals(searchParams) && (
+        <p className="text-sm text-gray-600">
+          Today only: <span className="font-semibold text-sale">extra 10–20% off</span> on top of the usual price,
+          plus <span className="font-semibold text-green-700">free delivery</span>. New deals every day at midnight.
+        </p>
+      )}
 
       <div className="flex gap-6 mt-4">
         <aside className="hidden lg:block w-60 flex-shrink-0">

@@ -20,7 +20,7 @@ const SORT_OPTIONS = [
   { value: "newest", label: "Newest" },
 ];
 
-const FILTER_KEYS = ["category", "search", "sort", "minPrice", "maxPrice", "featured"];
+const FILTER_KEYS = ["category", "search", "sort", "minPrice", "maxPrice", "featured", "deals"];
 
 export default function ProductFiltersClient({ categories, currentFilters, mobile }: Props) {
   const router = useRouter();
@@ -91,6 +91,17 @@ export default function ProductFiltersClient({ categories, currentFilters, mobil
           </button>
         </form>
       </div>
+
+      {/* Deals */}
+      <label className="flex items-center gap-2.5 text-sm font-medium text-gray-700 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={currentFilters.deals === "true"}
+          onChange={(e) => pushParams({ deals: e.target.checked ? "true" : "" })}
+          className="w-4 h-4 accent-primary-600"
+        />
+        Today&apos;s Deals only <span className="text-xs font-normal text-gray-500">(extra off + free delivery)</span>
+      </label>
 
       {/* Category */}
       <fieldset>

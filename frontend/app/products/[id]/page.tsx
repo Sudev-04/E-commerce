@@ -2,13 +2,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Star, ArrowLeft, Shield, Truck, RefreshCw } from "lucide-react";
+import { Star, ArrowLeft, Shield, Truck, RefreshCw, Zap } from "lucide-react";
 import { ApiError, getProductSSR, getProductsSSR } from "@/lib/api";
 import { discountPercent, formatCategory, formatPrice } from "@/lib/format";
 import type { Product, PaginatedResponse } from "@/types";
 import AddToCartButton from "./AddToCartButton";
 import ProductGallery from "./ProductGallery";
 import ProductCard from "../../components/ProductCard";
+import DealCountdown from "../../components/DealCountdown";
 
 interface PageProps {
   params: { id: string };
@@ -110,6 +111,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </div>
             <p className="text-xs text-gray-500 mt-1">Inclusive of all taxes</p>
           </div>
+
+          {product.deal && (
+            <div className="rounded-xl border border-accent-300 bg-accent-50 p-4">
+              <p className="flex flex-wrap items-center gap-2 font-bold text-ink">
+                <Zap className="w-5 h-5 text-accent-600" aria-hidden="true" />
+                Today&apos;s Deal: extra {product.deal.extraPercent}% off + free delivery
+                <DealCountdown endsAt={product.deal.endsAt} className="badge bg-ink text-white font-medium" />
+              </p>
+              <p className="text-sm text-gray-700 mt-1">
+                Usual price {formatPrice(product.deal.basePrice)}, today {formatPrice(product.price)}: you save an extra{" "}
+                {formatPrice(product.deal.basePrice - product.price)}. Any order with this item ships free.
+              </p>
+            </div>
+          )}
 
           <div className="flex items-center gap-2">
             <div aria-hidden="true" className={`w-2.5 h-2.5 rounded-full ${product.stock > 10 ? "bg-green-500" : product.stock > 0 ? "bg-orange-500" : "bg-red-500"}`} />

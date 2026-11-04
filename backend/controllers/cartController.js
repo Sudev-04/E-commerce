@@ -4,16 +4,32 @@ const { sendSuccess, sendError } = require("../utils/apiResponse");
 const { AppError } = require("../middleware/errorMiddleware");
 const { calcSubtotal } = require("../utils/pricing");
 
-// `total` is the items subtotal (prices include GST). Shipping is added at checkout.
-const withTotal = (cart) => ({ ...cart, total: calcSubtotal(cart.items) });
-
 const snapshot = (product, quantity) => ({
   productId: product.id,
   name: product.name,
-  price: product.price,
+  price: product.price, // includes today's deal discount, if any
   image: product.images[0] || "",
   quantity,
+  freeDelivery: Boolean(product.deal),
 });
+
+// Keep cart lines in step with the catalogue: current price (deals start and
+// end at midnight), free-delivery flag, and drop products that were removed.
+const refresh = (cart) => ({
+  ...cart,
+  items: cart.items
+    .map((item) => {
+      const product = store.products.findById(item.productId);
+      return product ? { ...snapshot(product, item.quantity) } : null;
+    })
+    .filter(Boolean),
+});
+
+// `total` is the items subtotal (prices include GST). Shipping is added at checkout.
+const withTotal = (cart) => {
+  const fresh = refresh(cart);
+  return { ...fresh, total: calcSubtotal(fresh.items) };
+};
 
 // GET /api/cart
 const getCart = asyncHandler(async (req, res) => {

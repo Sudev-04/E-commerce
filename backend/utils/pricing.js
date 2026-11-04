@@ -9,9 +9,11 @@ const roundRupees = (n) => Math.round(n * 100) / 100;
 
 const calcSubtotal = (items) => items.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
+// Delivery is free over the threshold, or when any item is one of Today's Deals
 const calcTotals = (items) => {
   const subtotal = roundRupees(calcSubtotal(items));
-  const shipping = items.length === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const dealDelivery = items.some((i) => i.freeDelivery);
+  const shipping = items.length === 0 || subtotal >= FREE_SHIPPING_THRESHOLD || dealDelivery ? 0 : SHIPPING_FEE;
   // GST portion already included in the item prices (for display on invoices)
   const gstIncluded = roundRupees(subtotal - subtotal / (1 + GST_RATE));
   return { subtotal, shipping, gstIncluded, total: roundRupees(subtotal + shipping) };

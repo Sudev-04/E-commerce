@@ -159,7 +159,10 @@ export default function AdminPage() {
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className="badge bg-gray-100 text-gray-600">{formatCategory(p.category)}</span>
                     </td>
-                    <td className="px-4 py-3 font-semibold text-gray-900 whitespace-nowrap">{formatPrice(p.price)}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span className="font-semibold text-gray-900">{formatPrice(p.deal?.basePrice ?? p.price)}</span>
+                      {p.deal && <span className="block text-xs text-sale">Deal today: {formatPrice(p.price)}</span>}
+                    </td>
                     <td className="px-4 py-3">
                       <span className={`badge ${p.stock > 10 ? "bg-green-100 text-green-700" : p.stock > 0 ? "bg-orange-100 text-orange-700" : "bg-red-100 text-red-700"}`}>
                         {p.stock}

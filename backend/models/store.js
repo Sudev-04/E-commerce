@@ -184,6 +184,20 @@ const products = seed.map(
   })
 );
 
+// ─── Search & deals ──────────────────────────────────────────────────────────
+// Search rules live in utils/search.js (similar words, typo fixes, related items).
+const { searchProducts } = require("../utils/search");
+
+// Today's Deals (utils/deals.js): 8 products a day get an extra discount and
+// free delivery. Products are always read through `shopperView`, so the deal
+// price is used everywhere (listing, cart, checkout, orders).
+const { todaysDeals, withDeal } = require("../utils/deals");
+const shopperView = (list) => {
+  const deals = todaysDeals(products);
+  return list.map((p) => withDeal(p, deals));
+};
+const discountOf = (p) => (p.originalPrice > p.price ? ((p.originalPrice - p.price) / p.originalPrice) * 100 : 0);
+
 // ─── Carts / Orders / Tokens ─────────────────────────────────────────────────
 const carts = {};
 const orders = [];
@@ -211,31 +225,34 @@ const store = {
 
   // Products
   products: {
-    findAll: (filters = {}) => {
-      let result = [...products];
+    // Returns { result, searchNote }: searchNote explains when search had to
+    // fix a typo or fall back to related items.
+    search: (filters = {}) => {
+      let result = shopperView(products);
+      let searchNote = null;
       if (filters.category) result = result.filter((p) => p.category === filters.category);
       if (filters.featured !== undefined) result = result.filter((p) => p.featured === filters.featured);
-      if (filters.search) {
-        const q = filters.search.toLowerCase();
-        result = result.filter(
-          (p) =>
-            p.name.toLowerCase().includes(q) ||
-            p.description.toLowerCase().includes(q) ||
-            p.brand.toLowerCase().includes(q) ||
-            p.tags.some((t) => t.includes(q))
-        );
-      }
+      if (filters.deals) result = result.filter((p) => p.deal);
       if (filters.minPrice) result = result.filter((p) => p.price >= parseFloat(filters.minPrice));
       if (filters.maxPrice) result = result.filter((p) => p.price <= parseFloat(filters.maxPrice));
+      if (filters.search) {
+        // Results come back in relevance order; an explicit sort below overrides it
+        ({ results: result, note: searchNote } = searchProducts(result, filters.search, products));
+      }
       if (filters.sort === "price_asc") result.sort((a, b) => a.price - b.price);
       if (filters.sort === "price_desc") result.sort((a, b) => b.price - a.price);
       if (filters.sort === "rating") result.sort((a, b) => b.rating - a.rating);
       if (filters.sort === "newest") result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      if (filters.sort === "discount")
-        result.sort((a, b) => (b.originalPrice - b.price) / b.originalPrice - (a.originalPrice - a.price) / a.originalPrice);
-      return result;
+      if (filters.sort === "discount") result.sort((a, b) => discountOf(b) - discountOf(a));
+      return { result, searchNote };
     },
-    findById: (id) => products.find((p) => p.id === id),
+    findAll: (filters = {}) => store.products.search(filters).result,
+    // Shopper view (today's deal applied). Admin edits use findRawById.
+    findById: (id) => {
+      const product = products.find((p) => p.id === id);
+      return product ? shopperView([product])[0] : undefined;
+    },
+    findRawById: (id) => products.find((p) => p.id === id),
     create: (data) => {
       const product = { id: uuidv4(), ...data, createdAt: new Date().toISOString() };
       products.push(product);
