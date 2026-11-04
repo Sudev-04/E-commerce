@@ -44,9 +44,10 @@ const createOrder = asyncHandler(async (req, res) => {
     items.push({
       productId: product.id,
       name: product.name,
-      price: product.price,
+      price: product.price, // today's deal price when the product is on deal
       image: product.images[0] || "",
       quantity: line.quantity,
+      freeDelivery: Boolean(product.deal),
     });
   }
 

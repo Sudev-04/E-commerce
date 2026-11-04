@@ -28,7 +28,8 @@ export default function ProductForm({ product, onCancel, onSave }: Props) {
   const [form, setForm] = useState({
     name: product?.name ?? "",
     description: product?.description ?? "",
-    price: product ? String(product.price) : "",
+    // Edit the regular price; today's deal discount is applied automatically
+    price: product ? String(product.deal?.basePrice ?? product.price) : "",
     originalPrice: product ? String(product.originalPrice) : "",
     category: product?.category ?? "electronics",
     brand: product?.brand ?? "",

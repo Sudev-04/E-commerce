@@ -15,8 +15,9 @@ export const FREE_SHIPPING_THRESHOLD = 499;
 export const SHIPPING_FEE = 49;
 export const GST_RATE = 0.18;
 
-export function calcTotals(subtotal: number, itemCount: number) {
-  const shipping = itemCount === 0 || subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+/** Delivery is free over ₹499, or when the order has a Today's Deal item. */
+export function calcTotals(subtotal: number, itemCount: number, dealDelivery = false) {
+  const shipping = itemCount === 0 || subtotal >= FREE_SHIPPING_THRESHOLD || dealDelivery ? 0 : SHIPPING_FEE;
   const gstIncluded = subtotal - subtotal / (1 + GST_RATE);
   return { subtotal, shipping, gstIncluded, total: subtotal + shipping };
 }
@@ -56,6 +57,15 @@ export const ORDER_STATUS: Record<string, { label: string; className: string }> 
 /** Checkout URL for "Buy Now" (orders just this item; the cart is left alone). */
 export const buyNowUrl = (productId: string, quantity = 1) =>
   `/checkout?buyNow=${encodeURIComponent(productId)}&qty=${quantity}`;
+
+/** "Ends in 5h 20m" for a deal end time. */
+export function timeLeft(endsAt: string, now = Date.now()) {
+  const ms = new Date(endsAt).getTime() - now;
+  if (ms <= 0) return "Ended";
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  return h > 0 ? `Ends in ${h}h ${m}m` : `Ends in ${m}m`;
+}
 
 export const discountPercent = (price: number, originalPrice: number) =>
   originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0;

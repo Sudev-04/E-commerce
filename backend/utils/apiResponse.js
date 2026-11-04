@@ -17,10 +17,11 @@ const sendError = (res, message = "Error", statusCode = 400, errors = null) => {
   return res.status(statusCode).json(response);
 };
 
-const sendPaginated = (res, data, total, page, limit, message = "Success") => {
+const sendPaginated = (res, data, total, page, limit, message = "Success", extra = {}) => {
   return res.status(200).json({
     success: true,
     message,
+    ...extra,
     data,
     pagination: {
       total,

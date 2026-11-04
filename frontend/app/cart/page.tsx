@@ -32,7 +32,8 @@ export default function CartPage() {
     );
   }
 
-  const { subtotal, shipping, gstIncluded, total } = calcTotals(cart.total, cart.items.length);
+  const hasDealItem = cart.items.some((i) => i.freeDelivery);
+  const { subtotal, shipping, gstIncluded, total } = calcTotals(cart.total, cart.items.length, hasDealItem);
   const toFreeShipping = FREE_SHIPPING_THRESHOLD - subtotal;
 
   const handleCheckout = () => {
@@ -138,7 +139,12 @@ export default function CartPage() {
                   {shipping === 0 ? "FREE" : formatPrice(shipping)}
                 </dd>
               </div>
-              {toFreeShipping > 0 && (
+              {hasDealItem && (
+                <p className="text-xs text-green-700 bg-green-50 rounded-lg p-2">
+                  Free delivery: your cart has a Today&apos;s Deal item.
+                </p>
+              )}
+              {toFreeShipping > 0 && !hasDealItem && (
                 <p className="text-xs text-primary-700 bg-primary-50 rounded-lg p-2">
                   Add {formatPrice(toFreeShipping)} more for free delivery.
                 </p>

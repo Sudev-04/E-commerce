@@ -14,17 +14,19 @@ const getProducts = asyncHandler(async (req, res) => {
     ...(minPrice && { minPrice }),
     ...(maxPrice && { maxPrice }),
     ...(featured !== undefined && { featured: featured === "true" }),
+    // Today's Deals: only well-discounted products, biggest saving first by default
+    ...(req.query.deals === "true" && { deals: true, sort: sort || "discount" }),
   };
 
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
   const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
 
-  const allProducts = store.products.findAll(filters);
+  const { result: allProducts, searchNote } = store.products.search(filters);
   const total = allProducts.length;
   const startIndex = (pageNum - 1) * limitNum;
   const paginated = allProducts.slice(startIndex, startIndex + limitNum);
 
-  return sendPaginated(res, paginated, total, pageNum, limitNum, "Products fetched.");
+  return sendPaginated(res, paginated, total, pageNum, limitNum, "Products fetched.", { searchNote });
 });
 
 // GET /api/products/featured

@@ -79,6 +79,23 @@ async function FeaturedProducts() {
   );
 }
 
+async function TodaysDeals() {
+  let products: Product[] = [];
+  try {
+    const res = (await getProductsSSR({ deals: "true", limit: "8" })) as { data: Product[] };
+    products = res.data || [];
+  } catch {}
+  return (
+    <ProductSection
+      title="Today's Deals"
+      subtitle="Extra 10–20% off and free delivery. Today only, new deals at midnight."
+      href="/products?deals=true"
+      products={products}
+      tinted
+    />
+  );
+}
+
 async function SortedSection({ sort, title, subtitle }: { sort: string; title: string; subtitle: string }) {
   let products: Product[] = [];
   try {
@@ -86,7 +103,7 @@ async function SortedSection({ sort, title, subtitle }: { sort: string; title: s
     products = res.data || [];
   } catch {}
   return (
-    <ProductSection title={title} subtitle={subtitle} href={`/products?sort=${sort}`} products={products} tinted={sort === "discount"} />
+    <ProductSection title={title} subtitle={subtitle} href={sort === "discount" ? "/products?deals=true" : `/products?sort=${sort}`} products={products} tinted={sort === "discount"} />
   );
 }
 
@@ -148,7 +165,7 @@ export default function HomePage() {
               <Link href="/products" className="bg-white text-primary-700 font-bold py-3 px-8 rounded-xl hover:bg-primary-50 transition-colors shadow-lg">
                 Shop Now
               </Link>
-              <Link href="/products?sort=discount" className="border-2 border-white text-white font-bold py-3 px-8 rounded-xl hover:bg-white hover:text-primary-700 transition-all">
+              <Link href="/products?deals=true" className="border-2 border-white text-white font-bold py-3 px-8 rounded-xl hover:bg-white hover:text-primary-700 transition-all">
                 Today&apos;s Deals
               </Link>
             </div>
@@ -184,7 +201,7 @@ export default function HomePage() {
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton />}>
-        <SortedSection sort="discount" title="Top Deals" subtitle="The biggest savings right now" />
+        <TodaysDeals />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton />}>

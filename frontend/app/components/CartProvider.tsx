@@ -159,6 +159,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                   image: product.images[0] || "",
                   quantity,
                   stock: product.stock,
+                  freeDelivery: Boolean(product.deal),
                 },
               ];
           writeGuestItems(next);

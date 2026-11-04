@@ -59,6 +59,7 @@ function CheckoutForm() {
           price: p.price,
           image: p.images[0] || "",
           quantity: Math.min(buyNowQty, p.stock),
+          freeDelivery: Boolean(p.deal),
         });
       })
       .catch(() => setBuyNowError("This product is no longer available."));
@@ -95,7 +96,7 @@ function CheckoutForm() {
 
   const itemCount = items.reduce((a, i) => a + i.quantity, 0);
   const itemsSubtotal = items.reduce((a, i) => a + i.price * i.quantity, 0);
-  const { subtotal, shipping, gstIncluded, total } = calcTotals(itemsSubtotal, items.length);
+  const { subtotal, shipping, gstIncluded, total } = calcTotals(itemsSubtotal, items.length, items.some((i) => i.freeDelivery));
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
