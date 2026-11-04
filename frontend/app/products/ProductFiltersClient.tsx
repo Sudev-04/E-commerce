@@ -46,6 +46,8 @@ export default function ProductFiltersClient({ categories, currentFilters, mobil
       else params.delete(key);
     }
     params.delete("page");
+    params.delete("q"); // the "for your search …" note only applies to the redirected page
+    params.delete("exact");
     const qs = params.toString();
     router.push(qs ? `/products?${qs}` : "/products");
   };
