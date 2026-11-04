@@ -2,7 +2,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getProductsSSR, getCategoriesSSR } from "@/lib/api";
 import { formatCategory, formatPrice, pluralize } from "@/lib/format";
@@ -18,10 +17,6 @@ type SearchParams = {
   maxPrice?: string;
   featured?: string;
   deals?: string;
-  /** Original search text when a category search was redirected here */
-  q?: string;
-  /** "1" = plain search, never redirect to a category */
-  exact?: string;
   page?: string;
 };
 
@@ -174,23 +169,6 @@ async function ProductResults({ searchParams }: { searchParams: SearchParams }) 
 }
 
 export default async function ProductsPage({ searchParams }: PageProps) {
-  // A search that just names a category ("Fashion", "frashion", "clothes")
-  // opens that category page instead of a list of search results.
-  if (searchParams.search && !searchParams.exact) {
-    let categoryMatch: string | null | undefined;
-    try {
-      const res = (await getProductsSSR({ search: searchParams.search, limit: "1" })) as PaginatedResponse<Product>;
-      categoryMatch = res.categoryMatch;
-    } catch {}
-    if (categoryMatch) {
-      const params = new URLSearchParams({ category: categoryMatch, q: searchParams.search });
-      for (const key of ["sort", "minPrice", "maxPrice", "deals"] as const) {
-        if (searchParams[key]) params.set(key, searchParams[key]!);
-      }
-      redirect(`/products?${params.toString()}`);
-    }
-  }
-
   let categories: string[] = [];
   try {
     categories = ((await getCategoriesSSR()) as { data: string[] }).data || [];
@@ -213,14 +191,6 @@ export default async function ProductsPage({ searchParams }: PageProps) {
       </nav>
 
       <h1 className="text-2xl font-bold text-gray-900 mb-1">{pageTitle(searchParams)}</h1>
-      {searchParams.q && searchParams.category && (
-        <p role="status" className="text-sm text-gray-600 mt-1">
-          Showing everything in {formatCategory(searchParams.category)} for your search &ldquo;{searchParams.q}&rdquo;.{" "}
-          <Link href={`/products?search=${encodeURIComponent(searchParams.q)}&exact=1`} className="text-primary-600 hover:underline">
-            Search all products instead
-          </Link>
-        </p>
-      )}
       {isDeals(searchParams) && (
         <p className="text-sm text-gray-600">
           Today only: <span className="font-semibold text-sale">extra 10–20% off</span> on top of the usual price,
