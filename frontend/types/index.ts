@@ -64,6 +64,7 @@ export interface Order {
   paymentMethod: PaymentMethod;
   status: "confirmed" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
+  cancelledAt?: string;
 }
 
 export interface PaginatedResponse<T> {

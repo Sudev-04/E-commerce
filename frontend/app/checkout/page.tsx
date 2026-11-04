@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Loader2, Lock, Banknote, Smartphone, CreditCard } from "lucide-react";
+import { Loader2, Lock, Banknote, Smartphone, CreditCard, Zap } from "lucide-react";
 import { useAuth } from "../components/AuthProvider";
 import { useCart } from "../components/CartProvider";
 import { clientFetch } from "@/lib/api";
 import { calcTotals, formatPrice, pluralize } from "@/lib/format";
-import type { Order, PaymentMethod, ShippingAddress } from "@/types";
+import type { CartItem, Order, PaymentMethod, Product, ShippingAddress } from "@/types";
 
 const STATES = [
   "Andaman and Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh",
@@ -26,32 +26,64 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; desc: string; icon
   { value: "card", label: "Credit / Debit Card", desc: "Visa, Mastercard, RuPay", icon: CreditCard },
 ];
 
-export default function CheckoutPage() {
+function CheckoutForm() {
   const { user } = useAuth();
-  const { cart, itemCount, isReady, resetCart } = useCart();
+  const { cart, isReady, resetCart } = useCart();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // "Buy Now" checkout: /checkout?buyNow=<productId>&qty=<n> orders only that item
+  const buyNowId = searchParams.get("buyNow");
+  const buyNowQty = Math.max(1, Math.min(100, parseInt(searchParams.get("qty") || "1", 10) || 1));
+  const [buyNowItem, setBuyNowItem] = useState<CartItem | null>(null);
+  const [buyNowError, setBuyNowError] = useState("");
 
   const [address, setAddress] = useState<ShippingAddress>({
-    fullName: "",
-    phone: "",
-    line1: "",
-    line2: "",
-    city: "",
-    state: "",
-    pincode: "",
+    fullName: "", phone: "", line1: "", line2: "", city: "", state: "", pincode: "",
   });
   const [payment, setPayment] = useState<PaymentMethod>("cod");
   const [placing, setPlacing] = useState(false);
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    if (!buyNowId) return;
+    clientFetch<{ data: Product }>(`/api/products/${encodeURIComponent(buyNowId)}`)
+      .then(({ data: p }) => {
+        if (p.stock === 0) {
+          setBuyNowError(`${p.name} is out of stock.`);
+          return;
+        }
+        setBuyNowItem({
+          productId: p.id,
+          name: p.name,
+          price: p.price,
+          image: p.images[0] || "",
+          quantity: Math.min(buyNowQty, p.stock),
+        });
+      })
+      .catch(() => setBuyNowError("This product is no longer available."));
+  }, [buyNowId, buyNowQty]);
+
   const set = (field: keyof ShippingAddress) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setAddress((a) => ({ ...a, [field]: e.target.value }));
 
-  if (!isReady) {
+  if (buyNowError) {
+    return (
+      <div className="page-container py-20 text-center">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{buyNowError}</h1>
+        <Link href="/products" className="btn-primary inline-block mt-4">Browse Products</Link>
+      </div>
+    );
+  }
+
+  const loading = buyNowId ? !buyNowItem : !isReady;
+  if (loading) {
     return <div className="page-container py-12"><div className="h-96 skeleton rounded-xl" /></div>;
   }
 
-  if (cart.items.length === 0) {
+  const items = buyNowItem ? [buyNowItem] : cart.items;
+
+  if (items.length === 0) {
     return (
       <div className="page-container py-20 text-center">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h1>
@@ -61,7 +93,9 @@ export default function CheckoutPage() {
     );
   }
 
-  const { subtotal, shipping, gstIncluded, total } = calcTotals(cart.total, cart.items.length);
+  const itemCount = items.reduce((a, i) => a + i.quantity, 0);
+  const itemsSubtotal = items.reduce((a, i) => a + i.price * i.quantity, 0);
+  const { subtotal, shipping, gstIncluded, total } = calcTotals(itemsSubtotal, items.length);
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,9 +107,10 @@ export default function CheckoutPage() {
         body: JSON.stringify({
           shippingAddress: { ...address, fullName: address.fullName || user?.name || "" },
           paymentMethod: payment,
+          ...(buyNowItem && { buyNow: { productId: buyNowItem.productId, quantity: buyNowItem.quantity } }),
         }),
       });
-      resetCart();
+      if (!buyNowItem) resetCart(); // Buy Now leaves the cart as it was
       router.push(`/orders/${res.data.id}?placed=1`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not place your order. Please try again.");
@@ -85,11 +120,17 @@ export default function CheckoutPage() {
 
   return (
     <div className="page-container py-8 page-transition">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Checkout</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Checkout</h1>
+      {buyNowItem ? (
+        <p className="text-sm text-primary-700 bg-primary-50 border border-primary-100 rounded-lg px-3 py-2 mb-6 flex items-center gap-2 w-fit">
+          <Zap className="w-4 h-4" aria-hidden="true" /> Buy Now: you&apos;re ordering just this item. Your cart stays as it is.
+        </p>
+      ) : (
+        <div className="mb-6" />
+      )}
 
       <form onSubmit={placeOrder} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          {/* Address */}
           <section className="card p-6" aria-labelledby="address-heading">
             <h2 id="address-heading" className="font-bold text-gray-900 text-lg mb-4">Delivery Address</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -127,7 +168,6 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          {/* Payment */}
           <fieldset className="card p-6">
             <legend className="sr-only">Payment method</legend>
             <h2 className="font-bold text-gray-900 text-lg mb-1" aria-hidden="true">Payment Method</h2>
@@ -152,12 +192,11 @@ export default function CheckoutPage() {
           </fieldset>
         </div>
 
-        {/* Summary */}
         <div className="lg:col-span-1">
           <div className="card p-6 sticky top-20">
             <h2 className="font-bold text-gray-900 text-lg mb-4">Order Summary</h2>
             <ul className="space-y-3 mb-4 max-h-64 overflow-y-auto">
-              {cart.items.map((item) => (
+              {items.map((item) => (
                 <li key={item.productId} className="flex gap-3 items-center">
                   <div className="relative w-12 h-12 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
                     {item.image && <Image src={item.image} alt="" fill className="object-cover" sizes="48px" />}
@@ -182,7 +221,8 @@ export default function CheckoutPage() {
 
             {error && (
               <div role="alert" className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-4 text-sm">
-                {error} {error.includes("stock") || error.includes("available") ? <Link href="/cart" className="underline font-medium">Review cart</Link> : null}
+                {error}{" "}
+                {!buyNowItem && (error.includes("stock") || error.includes("available")) ? <Link href="/cart" className="underline font-medium">Review cart</Link> : null}
               </div>
             )}
 
@@ -196,5 +236,13 @@ export default function CheckoutPage() {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="page-container py-12"><div className="h-96 skeleton rounded-xl" /></div>}>
+      <CheckoutForm />
+    </Suspense>
   );
 }

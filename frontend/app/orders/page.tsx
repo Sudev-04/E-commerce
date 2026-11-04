@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Package, ChevronRight } from "lucide-react";
 import { clientFetch } from "@/lib/api";
-import { formatPrice, pluralize } from "@/lib/format";
+import { formatPrice, pluralize, ORDER_STATUS } from "@/lib/format";
 import type { Order } from "@/types";
 
 export default function OrdersPage() {
@@ -50,7 +50,7 @@ export default function OrdersPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-gray-900">{formatPrice(order.total)}</p>
-                    <span className="badge bg-green-100 text-green-700 capitalize">{order.status}</span>
+                    <span className={`badge ${ORDER_STATUS[order.status]?.className ?? "bg-gray-100 text-gray-700"}`}>{ORDER_STATUS[order.status]?.label ?? order.status}</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-400" aria-hidden="true" />
                 </Link>
