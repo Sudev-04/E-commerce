@@ -91,6 +91,8 @@ export interface PaginatedResponse<T> {
   message: string;
   data: T[];
   searchNote?: SearchNote | null;
+  /** Set when the search just names a category ("fashion", "frashion") */
+  categoryMatch?: string | null;
   pagination: {
     total: number;
     page: number;
