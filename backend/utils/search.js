@@ -11,7 +11,7 @@ const CATEGORY_WORDS = {
   electronics: "electronics electronic gadgets",
   fashion: "fashion clothing clothes apparel wear",
   sports: "sports sport fitness gym",
-  home: "home kitchen kitchenware homeware",
+  home: "home kitchen",
   furniture: "furniture",
   accessories: "accessories accessory",
 };
@@ -195,25 +195,4 @@ function correctQuery(query, products) {
   return changed ? corrected.join(" ") : null;
 }
 
-/**
- * If the whole query names a category ("fashion", "frashion", "clothes",
- * "home and kitchen"), return that category's slug so the shopper can be sent
- * straight to the category page. Mixed queries ("fashion jacket") return null.
- */
-function matchCategory(query, allProducts) {
-  const tryWords = (qWords) => {
-    const hits = Object.entries(CATEGORY_WORDS).filter(([, text]) => {
-      const catWords = text.split(" ").map(stem);
-      return qWords.every((w) => catWords.includes(w));
-    });
-    return hits.length === 1 ? hits[0][0] : null;
-  };
-  const qWords = words(query);
-  if (qWords.length === 0) return null;
-  const exact = tryWords(qWords);
-  if (exact) return exact;
-  const corrected = correctQuery(query, allProducts);
-  return corrected ? tryWords(words(corrected)) : null;
-}
-
-module.exports = { searchProducts, correctQuery, matchCategory, normalize };
+module.exports = { searchProducts, correctQuery, normalize };

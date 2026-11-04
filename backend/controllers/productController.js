@@ -2,7 +2,6 @@ const store = require("../models/store");
 const asyncHandler = require("../utils/asyncHandler");
 const { sendSuccess, sendError, sendPaginated } = require("../utils/apiResponse");
 const { AppError } = require("../middleware/errorMiddleware");
-const { matchCategory } = require("../utils/search");
 
 // GET /api/products
 const getProducts = asyncHandler(async (req, res) => {
@@ -23,13 +22,11 @@ const getProducts = asyncHandler(async (req, res) => {
   const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 12));
 
   const { result: allProducts, searchNote } = store.products.search(filters);
-  // A search that just names a category ("fashion", "frashion") → open that category
-  const categoryMatch = search ? matchCategory(search, store.products.findAll({})) : null;
   const total = allProducts.length;
   const startIndex = (pageNum - 1) * limitNum;
   const paginated = allProducts.slice(startIndex, startIndex + limitNum);
 
-  return sendPaginated(res, paginated, total, pageNum, limitNum, "Products fetched.", { searchNote, categoryMatch });
+  return sendPaginated(res, paginated, total, pageNum, limitNum, "Products fetched.", { searchNote });
 });
 
 // GET /api/products/featured
