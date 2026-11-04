@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Star, ShoppingCart, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Star, ShoppingCart, Check, Zap } from "lucide-react";
 import type { Product } from "@/types";
 import { useCart } from "./CartProvider";
 import { useState } from "react";
-import { formatPrice, discountPercent } from "@/lib/format";
+import { buyNowUrl, formatPrice, discountPercent } from "@/lib/format";
 
 interface ProductCardProps {
   product: Product;
@@ -14,23 +15,33 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  const { addToCart } = useCart();
+  const { cart, addToCart } = useCart();
+  const router = useRouter();
   const [adding, setAdding] = useState(false);
-  const [added, setAdded] = useState(false);
 
   const discount = discountPercent(product.price, product.originalPrice);
   const outOfStock = product.stock === 0;
+  // "In cart" is read from the cart itself, so it stays visible for as long
+  // as the item is in the cart (not just for a moment after clicking).
+  const inCartQty = cart.items.find((i) => i.productId === product.id)?.quantity ?? 0;
+  const inCart = inCartQty > 0;
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleCartClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setAdding(true);
-    const ok = await addToCart(product, 1);
-    setAdding(false);
-    if (ok) {
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
+    if (inCart) {
+      router.push("/cart");
+      return;
     }
+    setAdding(true);
+    await addToCart(product, 1);
+    setAdding(false);
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    router.push(buyNowUrl(product.id, 1));
   };
 
   const stars = Array.from({ length: 5 }, (_, i) => i < Math.round(product.rating));
@@ -52,20 +63,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           <div className="w-full h-full flex items-center justify-center text-gray-300 text-5xl" aria-hidden="true">📦</div>
         )}
 
-        {/* Badges */}
         <div className="absolute top-2 left-2 flex flex-col items-start gap-1">
-          {discount > 0 && (
-            <span className="badge bg-sale text-white">{discount}% off</span>
-          )}
-          {product.featured && (
-            <span className="badge bg-accent-400 text-ink">Featured</span>
-          )}
+          {discount > 0 && <span className="badge bg-sale text-white">{discount}% off</span>}
+          {product.featured && <span className="badge bg-accent-400 text-ink">Featured</span>}
         </div>
 
         {product.stock <= 5 && product.stock > 0 && (
-          <span className="absolute bottom-2 left-2 badge bg-orange-100 text-orange-700">
-            Only {product.stock} left
-          </span>
+          <span className="absolute bottom-2 left-2 badge bg-orange-100 text-orange-700">Only {product.stock} left</span>
         )}
       </div>
 
@@ -97,20 +101,23 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           </div>
 
           <button
-            onClick={handleAddToCart}
+            onClick={handleCartClick}
             disabled={adding || outOfStock}
             className={`p-2.5 rounded-lg transition-all duration-200 flex-shrink-0 ${
-              added
-                ? "bg-green-100 text-green-700"
+              inCart
+                ? "bg-green-100 text-green-700 hover:bg-green-200"
                 : outOfStock
                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                 : "bg-primary-50 text-primary-700 hover:bg-primary-600 hover:text-white"
             }`}
-            aria-label={outOfStock ? `${product.name} is out of stock` : `Add ${product.name} to cart`}
+            aria-label={
+              outOfStock ? `${product.name} is out of stock` : inCart ? `${product.name} is in your cart. Go to cart` : `Add ${product.name} to cart`
+            }
+            title={inCart ? "In cart: go to cart" : "Add to cart"}
           >
             {adding ? (
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-            ) : added ? (
+            ) : inCart ? (
               <Check className="w-4 h-4" aria-hidden="true" />
             ) : (
               <ShoppingCart className="w-4 h-4" aria-hidden="true" />
@@ -118,7 +125,23 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           </button>
         </div>
 
-        {outOfStock && <p className="text-xs text-red-600 font-medium text-center">Out of stock</p>}
+        {inCart && (
+          <p className="text-xs font-medium text-green-700 flex items-center gap-1">
+            <Check className="w-3.5 h-3.5" aria-hidden="true" /> Added to cart{inCartQty > 1 ? ` (${inCartQty})` : ""}
+          </p>
+        )}
+
+        {outOfStock ? (
+          <p className="text-xs text-red-600 font-medium text-center py-2">Out of stock</p>
+        ) : (
+          <button
+            onClick={handleBuyNow}
+            className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-primary-600 text-white text-sm font-semibold py-2 hover:bg-primary-700 transition-colors"
+            aria-label={`Buy ${product.name} now`}
+          >
+            <Zap className="w-4 h-4" aria-hidden="true" /> Buy Now
+          </button>
+        )}
       </div>
     </Link>
   );

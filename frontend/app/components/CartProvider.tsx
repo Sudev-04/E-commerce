@@ -104,6 +104,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (!cancelled) setCart(toCart(readGuestItems()));
       } else {
         const guestItems = readGuestItems();
+        // Take the guest cart out of storage *before* sending it, so a second
+        // run (e.g. a page load while this request is in flight) can't merge
+        // the same items twice. It is put back if the merge fails.
+        if (guestItems.length) writeGuestItems([]);
         try {
           const res = guestItems.length
             ? await clientFetch<{ data: Cart }>("/api/cart/merge", {
@@ -113,9 +117,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                 }),
               })
             : await clientFetch<{ data: Cart }>("/api/cart");
-          if (guestItems.length) writeGuestItems([]);
           if (!cancelled) setCart(res.data);
         } catch {
+          if (guestItems.length) writeGuestItems(guestItems);
           if (!cancelled) setCart(emptyCart);
         }
       }

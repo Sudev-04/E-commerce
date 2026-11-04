@@ -34,8 +34,9 @@ function RegisterForm() {
     try {
       const user = await registerUser(form.name, form.email, form.password);
       setUser(user);
+      // Navigate only: a refresh here raced the navigation and could leave the
+      // browser on the sign-in URL, dropping the callback's query (e.g. Buy Now).
       router.replace(callbackUrl);
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed.");
       setLoading(false);

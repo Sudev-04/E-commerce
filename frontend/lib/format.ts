@@ -45,5 +45,17 @@ export function pluralize(count: number, singular: string, plural = `${singular}
   return `${count.toLocaleString("en-IN")} ${count === 1 ? singular : plural}`;
 }
 
+// ─── Orders ─────────────────────────────────────────────────────────────────
+export const ORDER_STATUS: Record<string, { label: string; className: string }> = {
+  confirmed: { label: "Confirmed", className: "bg-green-100 text-green-700" },
+  shipped: { label: "Shipped", className: "bg-primary-100 text-primary-700" },
+  delivered: { label: "Delivered", className: "bg-gray-100 text-gray-700" },
+  cancelled: { label: "Cancelled", className: "bg-red-100 text-red-700" },
+};
+
+/** Checkout URL for "Buy Now" (orders just this item; the cart is left alone). */
+export const buyNowUrl = (productId: string, quantity = 1) =>
+  `/checkout?buyNow=${encodeURIComponent(productId)}&qty=${quantity}`;
+
 export const discountPercent = (price: number, originalPrice: number) =>
   originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0;

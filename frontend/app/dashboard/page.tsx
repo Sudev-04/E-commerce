@@ -7,7 +7,7 @@ import { ShoppingCart, Package, User, LogOut, ClipboardList, Star, Shield } from
 import { useAuth } from "../components/AuthProvider";
 import { useCart } from "../components/CartProvider";
 import { clientFetch } from "@/lib/api";
-import { formatPrice, pluralize } from "@/lib/format";
+import { formatPrice, pluralize, ORDER_STATUS } from "@/lib/format";
 import type { Order } from "@/types";
 
 function DeniedNotice() {
@@ -130,7 +130,10 @@ export default function DashboardPage() {
                       <span className="font-medium text-gray-900">{o.id}</span>
                       <span className="block text-xs text-gray-500">{new Date(o.createdAt).toLocaleDateString("en-IN")}</span>
                     </span>
-                    <span className="text-sm font-semibold">{formatPrice(o.total)}</span>
+                    <span className="text-right">
+                      <span className="block text-sm font-semibold">{formatPrice(o.total)}</span>
+                      <span className={`badge ${ORDER_STATUS[o.status]?.className ?? ""}`}>{ORDER_STATUS[o.status]?.label ?? o.status}</span>
+                    </span>
                   </Link>
                 </li>
               ))}
