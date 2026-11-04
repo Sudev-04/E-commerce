@@ -19,3 +19,6 @@ services:
         sync: false
       - key: JWT_REFRESH_SECRET
         generateValue: true
+      # Private admin password; set it in the Render dashboard (Environment)
+      - key: ADMIN_PASSWORD
+        sync: false

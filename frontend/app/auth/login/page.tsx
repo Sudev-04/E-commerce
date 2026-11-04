@@ -50,11 +50,8 @@ function LoginForm() {
     }
   };
 
-  const fillDemo = (role: "user" | "admin") => {
-    setForm(role === "admin"
-      ? { email: "admin@example.com", password: "admin123" }
-      : { email: "john@example.com", password: "password123" });
-  };
+  // Only the shopper demo is offered publicly; admin credentials stay private.
+  const fillDemo = () => setForm({ email: "john@example.com", password: "password123" });
 
   return (
     <div className="card p-8">
@@ -76,15 +73,10 @@ function LoginForm() {
       )}
 
       <div className="bg-primary-50 border border-primary-200 rounded-lg p-3 mb-6">
-        <p className="text-xs font-semibold text-primary-700 mb-2">Demo accounts</p>
-        <div className="flex gap-2">
-          <button type="button" onClick={() => fillDemo("user")} className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1.5 rounded-md font-medium transition-colors">
-            User account
-          </button>
-          <button type="button" onClick={() => fillDemo("admin")} className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1.5 rounded-md font-medium transition-colors">
-            Admin account
-          </button>
-        </div>
+        <p className="text-xs font-semibold text-primary-700 mb-2">Just looking around?</p>
+        <button type="button" onClick={fillDemo} className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-3 py-1.5 rounded-md font-medium transition-colors">
+          Use demo shopper account
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
