@@ -68,7 +68,7 @@ function RegisterForm() {
             className="input-field" required autoComplete="email" />
         </div>
         <div>
-          <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1.5">Password <span className="text-gray-400 font-normal">(at least 6 characters)</span></label>
+          <label htmlFor="password" className="text-sm font-medium text-gray-700 block mb-1.5">Password</label>
           <div className="relative">
             <input id="password" type={showPassword ? "text" : "password"} value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
