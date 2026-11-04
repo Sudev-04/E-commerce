@@ -122,8 +122,21 @@ async function ProductResults({ searchParams }: { searchParams: SearchParams }) 
         <div className="text-center py-20">
           <p className="text-5xl mb-4" aria-hidden="true">🔍</p>
           <p className="text-xl font-semibold text-gray-900">No products found</p>
-          <p className="text-gray-500 mt-2">Try a different search or fewer filters.</p>
-          <Link href="/products" className="btn-primary mt-6 inline-block">Clear Filters</Link>
+          {searchParams.search && (searchParams.category || searchParams.deals || searchParams.featured || searchParams.minPrice || searchParams.maxPrice) ? (
+            <>
+              <p className="text-gray-500 mt-2">
+                Nothing matched &ldquo;{searchParams.search}&rdquo; with the current filters.
+              </p>
+              <Link href={`/products?search=${encodeURIComponent(searchParams.search)}`} className="btn-primary mt-6 inline-block">
+                Search all products for &ldquo;{searchParams.search}&rdquo;
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-gray-500 mt-2">Try a different search or fewer filters.</p>
+              <Link href="/products" className="btn-primary mt-6 inline-block">Clear Filters</Link>
+            </>
+          )}
         </div>
       ) : (
         <>

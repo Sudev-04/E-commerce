@@ -57,9 +57,11 @@ export default function ProductFiltersClient({ categories, currentFilters, mobil
     router.push("/products");
   };
 
+  // A new search looks across ALL products: drop the category/deals filter so
+  // e.g. searching "earphone" after browsing Fashion doesn't return nothing.
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    pushParams({ search: search.trim() });
+    pushParams({ search: search.trim(), category: "", deals: "", featured: "" });
   };
 
   const handlePrice = (e: React.FormEvent) => {
