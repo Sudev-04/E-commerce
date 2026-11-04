@@ -13,6 +13,7 @@ function RegisterForm() {
   const { setUser } = useAuth();
   const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [pwFocused, setPwFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -72,6 +73,8 @@ function RegisterForm() {
           <div className="relative">
             <input id="password" type={showPassword ? "text" : "password"} value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onFocus={() => setPwFocused(true)} onBlur={() => setPwFocused(false)}
+              aria-describedby="password-hint"
               className="input-field pr-10" required minLength={6} autoComplete="new-password" />
             <button type="button" onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
@@ -79,6 +82,12 @@ function RegisterForm() {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+          {(pwFocused || (form.password.length > 0 && form.password.length < 6)) && (
+            <p id="password-hint" aria-live="polite"
+              className={`text-xs mt-1.5 ${form.password.length >= 6 ? "text-green-700" : "text-gray-500"}`}>
+              {form.password.length >= 6 ? "✓ Password length is good" : `Use 6 or more characters (${form.password.length}/6)`}
+            </p>
+          )}
         </div>
         <div>
           <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700 block mb-1.5">Confirm password</label>
