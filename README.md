@@ -1,4 +1,4 @@
-# 🛍️ ShopNext — Full Stack E-Commerce Store
+# 🛍️ Northlane — Full Stack E-Commerce Store
 
 A full-stack e-commerce store built with **Next.js 14** (App Router, SSR, SSG + ISR) and **Node.js + Express** (JWT auth, middleware). Prices are in Indian Rupees (₹, GST inclusive).
 

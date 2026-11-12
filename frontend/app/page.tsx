@@ -1,23 +1,24 @@
 // Server Component — sections are fetched on the server and streamed in
 import Link from "next/link";
+import Image from "next/image";
 import { Suspense } from "react";
 import { ArrowRight, Shield, Truck, RefreshCw, Headphones } from "lucide-react";
 import ProductCard from "./components/ProductCard";
 import { getFeaturedProductsSSR, getCategoriesSSR, getProductsSSR } from "@/lib/api";
-import { CATEGORY_META, formatCategory } from "@/lib/format";
+import { formatCategory, formatPrice } from "@/lib/format";
 import type { Product } from "@/types";
 
 export const revalidate = 120;
 
-const GRID = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4";
+const GRID = "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-6";
 
 function SectionSkeleton() {
   return (
-    <section className="py-10">
+    <section className="py-14">
       <div className="page-container">
-        <div className="h-8 w-48 skeleton rounded mb-6" />
+        <div className="h-8 w-48 skeleton mb-8" />
         <div className={GRID}>
-          {Array.from({ length: 4 }, (_, i) => <div key={i} className="aspect-[3/4] skeleton rounded-xl" />)}
+          {Array.from({ length: 4 }, (_, i) => <div key={i} className="aspect-[4/5] skeleton" />)}
         </div>
       </div>
     </section>
@@ -25,6 +26,7 @@ function SectionSkeleton() {
 }
 
 function ProductSection({
+  eyebrow,
   title,
   subtitle,
   href,
@@ -32,6 +34,7 @@ function ProductSection({
   priority = false,
   tinted = false,
 }: {
+  eyebrow: string;
   title: string;
   subtitle: string;
   href: string;
@@ -41,15 +44,19 @@ function ProductSection({
 }) {
   if (products.length === 0) return null;
   return (
-    <section className={`py-10 ${tinted ? "bg-white" : ""}`}>
+    <section className={`py-14 md:py-16 ${tinted ? "bg-primary-50" : ""}`}>
       <div className="page-container">
-        <div className="flex items-end justify-between gap-4 mb-6">
+        <div className="flex items-end justify-between gap-4 mb-8">
           <div>
+            <p className="eyebrow mb-2">{eyebrow}</p>
             <h2 className="section-title">{title}</h2>
-            <p className="text-gray-500 mt-1 text-sm">{subtitle}</p>
+            <p className="text-primary-400 mt-2 text-sm max-w-md">{subtitle}</p>
           </div>
-          <Link href={href} className="flex items-center gap-1 text-primary-600 font-medium hover:text-primary-700 text-sm whitespace-nowrap">
-            View all <ArrowRight className="w-4 h-4" aria-hidden="true" />
+          <Link
+            href={href}
+            className="flex items-center gap-2 text-[11px] uppercase tracking-label text-ink border-b border-ink pb-1 hover:text-primary-400 hover:border-primary-400 whitespace-nowrap transition-colors"
+          >
+            View all <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} aria-hidden="true" />
           </Link>
         </div>
         <div className={GRID}>
@@ -62,16 +69,68 @@ function ProductSection({
   );
 }
 
-async function FeaturedProducts() {
-  let products: Product[] = [];
+async function loadFeatured(): Promise<Product[]> {
   try {
     const res = (await getFeaturedProductsSSR()) as { data: Product[] };
-    products = res.data || [];
-  } catch {}
+    return res.data || [];
+  } catch {
+    return [];
+  }
+}
+
+/** Opening panel: headline on the left, two featured pieces on the right. */
+async function Hero() {
+  const picks = (await loadFeatured()).filter((p) => p.images[0]).slice(0, 2);
+
+  return (
+    <section className="border-b border-primary-100">
+      <div className="page-container grid md:grid-cols-2 gap-10 lg:gap-16 items-center py-12 md:py-20">
+        <div>
+          <p className="eyebrow mb-5">The Northlane edit</p>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl leading-[1.08] text-ink">
+            Well-made things for everyday living.
+          </h1>
+          <p className="text-primary-500 mt-6 max-w-md leading-relaxed">
+            Electronics, clothing, furniture and pieces for the home, chosen with care and delivered across India.
+          </p>
+          <div className="flex flex-wrap gap-3 mt-9">
+            <Link href="/products" className="btn-primary px-9 py-4">Shop the collection</Link>
+            <Link href="/products?deals=true" className="btn-secondary px-9 py-4">Today&apos;s deals</Link>
+          </div>
+        </div>
+
+        {picks.length > 0 && (
+          <div className={`grid gap-4 ${picks.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
+            {picks.map((p, i) => (
+              <Link key={p.id} href={`/products/${p.id}`} className={`group block ${i === 1 ? "mt-10 md:mt-16" : ""}`}>
+                <div className="relative aspect-[3/4] overflow-hidden bg-primary-50">
+                  <Image
+                    src={p.images[0]}
+                    alt={p.name}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                  />
+                </div>
+                <p className="text-sm text-ink mt-3 line-clamp-1 group-hover:underline underline-offset-4">{p.name}</p>
+                <p className="text-sm text-primary-400">{formatPrice(p.price)}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+async function FeaturedProducts() {
+  const products = await loadFeatured();
   return (
     <ProductSection
-      title="Featured Products"
-      subtitle="Hand-picked favourites from every department"
+      eyebrow="Selected"
+      title="Featured"
+      subtitle="Favourites from every department."
       href="/products?featured=true"
       products={products}
       priority
@@ -87,8 +146,9 @@ async function TodaysDeals() {
   } catch {}
   return (
     <ProductSection
+      eyebrow="Until midnight"
       title="Today's Deals"
-      subtitle="Extra 10–20% off and free delivery. Today only, new deals at midnight."
+      subtitle="An extra 10–20% off and free delivery. New deals every day."
       href="/products?deals=true"
       products={products}
       tinted
@@ -96,17 +156,16 @@ async function TodaysDeals() {
   );
 }
 
-async function SortedSection({ sort, title, subtitle }: { sort: string; title: string; subtitle: string }) {
+async function SortedSection({ sort, eyebrow, title, subtitle }: { sort: string; eyebrow: string; title: string; subtitle: string }) {
   let products: Product[] = [];
   try {
     const res = (await getProductsSSR({ sort, limit: "8" })) as { data: Product[] };
     products = res.data || [];
   } catch {}
-  return (
-    <ProductSection title={title} subtitle={subtitle} href={sort === "discount" ? "/products?deals=true" : `/products?sort=${sort}`} products={products} tinted={sort === "discount"} />
-  );
+  return <ProductSection eyebrow={eyebrow} title={title} subtitle={subtitle} href={`/products?sort=${sort}`} products={products} />;
 }
 
+/** One tile per category, using the top-rated product's photo as the cover. */
 async function CategorySection() {
   let categories: string[] = [];
   try {
@@ -116,19 +175,39 @@ async function CategorySection() {
 
   if (categories.length === 0) return null;
 
+  const covers = await Promise.all(
+    categories.map(async (cat) => {
+      try {
+        const res = (await getProductsSSR({ category: cat, sort: "rating", limit: "1" })) as { data: Product[] };
+        return res.data?.[0]?.images?.[0] ?? null;
+      } catch {
+        return null;
+      }
+    })
+  );
+
   return (
-    <section className="py-8 bg-white">
+    <section className="py-14 md:py-16">
       <div className="page-container">
-        <h2 className="section-title mb-6">Shop by Category</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {categories.map((cat) => (
-            <Link
-              key={cat}
-              href={`/products?category=${cat}`}
-              className="flex flex-col items-center justify-center gap-2 px-3 py-5 rounded-xl border border-primary-100 bg-primary-50/50 text-primary-900 font-medium text-sm text-center hover:border-primary-300 hover:shadow-md transition-all duration-200"
-            >
-              <span className="text-3xl" aria-hidden="true">{CATEGORY_META[cat]?.emoji ?? "📦"}</span>
-              {formatCategory(cat)}
+        <p className="eyebrow mb-2">Departments</p>
+        <h2 className="section-title mb-8">Shop by Category</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          {categories.map((cat, i) => (
+            <Link key={cat} href={`/products?category=${cat}`} className="group block">
+              <div className="relative aspect-[4/5] overflow-hidden bg-primary-50">
+                {covers[i] && (
+                  <Image
+                    src={covers[i] as string}
+                    alt=""
+                    fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                  />
+                )}
+              </div>
+              <p className="text-[11px] uppercase tracking-label text-ink mt-3 group-hover:underline underline-offset-4">
+                {formatCategory(cat)}
+              </p>
             </Link>
           ))}
         </div>
@@ -147,57 +226,12 @@ const features = [
 export default function HomePage() {
   return (
     <div className="page-transition">
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-ink text-white">
-        <div className="page-container py-16 md:py-24">
-          <div className="max-w-2xl">
-            <div className="badge bg-accent-400 text-ink mb-4 text-sm px-3 py-1 font-semibold">
-              New arrivals every week
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
-              Shop Smarter,<br />
-              <span className="text-accent-300">Live Better</span>
-            </h1>
-            <p className="text-lg text-primary-100 mb-8 max-w-xl">
-              Great prices on electronics, fashion, furniture, home &amp; kitchen and more, delivered to your door.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link href="/products" className="bg-white text-primary-700 font-bold py-3 px-8 rounded-xl hover:bg-primary-50 transition-colors shadow-lg">
-                Shop Now
-              </Link>
-              <Link href="/products?deals=true" className="border-2 border-white text-white font-bold py-3 px-8 rounded-xl hover:bg-white hover:text-primary-700 transition-all">
-                Today&apos;s Deals
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="page-container py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {features.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-5 h-5 text-primary-600" aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 text-sm">{title}</p>
-                  <p className="text-gray-500 text-xs">{desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Suspense fallback={<div className="py-8 bg-white"><div className="page-container"><div className="h-24 skeleton rounded-xl" /></div></div>}>
-        <CategorySection />
+      <Suspense fallback={<div className="page-container py-12 md:py-20"><div className="h-80 skeleton" /></div>}>
+        <Hero />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton />}>
-        <FeaturedProducts />
+      <Suspense fallback={<div className="py-14"><div className="page-container"><div className="h-40 skeleton" /></div></div>}>
+        <CategorySection />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton />}>
@@ -205,21 +239,39 @@ export default function HomePage() {
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton />}>
-        <SortedSection sort="newest" title="New Arrivals" subtitle="Fresh additions to the store" />
+        <FeaturedProducts />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton />}>
-        <SortedSection sort="rating" title="Top Rated" subtitle="Loved by our customers" />
+        <SortedSection sort="newest" eyebrow="Just in" title="New Arrivals" subtitle="The latest additions to the store." />
       </Suspense>
 
-      {/* CTA Banner */}
-      <section className="bg-primary-50 py-14">
+      <Suspense fallback={<SectionSkeleton />}>
+        <SortedSection sort="rating" eyebrow="Most loved" title="Top Rated" subtitle="The pieces our customers rate highest." />
+      </Suspense>
+
+      {/* Service promises */}
+      <section className="border-y border-primary-100">
+        <div className="page-container py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {features.map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="text-center">
+                <Icon className="w-6 h-6 text-ink mx-auto mb-3" strokeWidth={1.25} aria-hidden="true" />
+                <p className="text-[11px] uppercase tracking-label text-ink">{title}</p>
+                <p className="text-primary-400 text-sm mt-1">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Account prompt */}
+      <section className="py-20">
         <div className="page-container text-center">
-          <h2 className="text-3xl font-bold mb-3 text-ink">Ready to start shopping?</h2>
-          <p className="text-gray-600 mb-8">Create a free account to track your orders and check out faster.</p>
-          <Link href="/auth/register" className="btn-primary text-base px-10 py-3.5 inline-block">
-            Create Free Account
-          </Link>
+          <p className="eyebrow mb-3">Join Northlane</p>
+          <h2 className="text-3xl md:text-4xl text-ink mb-4">Keep track of every order.</h2>
+          <p className="text-primary-500 mb-9 max-w-md mx-auto">Create a free account to follow your orders and check out faster.</p>
+          <Link href="/auth/register" className="btn-primary px-10 py-4 inline-block">Create an account</Link>
         </div>
       </section>
     </div>

@@ -3,92 +3,104 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
-  }
-
   * {
     box-sizing: border-box;
   }
 
   body {
-    @apply text-gray-900 antialiased bg-surface;
+    @apply text-ink antialiased bg-surface font-sans;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
+    @apply bg-ink text-white text-xs font-medium uppercase tracking-label py-3 px-6 border border-ink hover:bg-white hover:text-ink transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
   }
 
   .btn-secondary {
-    @apply bg-white text-gray-700 font-semibold py-2.5 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    @apply bg-transparent text-ink text-xs font-medium uppercase tracking-label py-3 px-6 border border-ink hover:bg-ink hover:text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-ink focus-visible:ring-offset-2;
   }
 
   .icon-btn {
-    @apply p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500;
+    @apply p-2 text-ink hover:text-primary-400 transition-colors focus:outline-none focus-visible:ring-1 focus-visible:ring-ink;
   }
 
   .btn-danger {
-    @apply bg-red-600 text-white font-semibold py-2.5 px-6 rounded-lg hover:bg-red-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-sale text-white text-xs font-medium uppercase tracking-label py-3 px-6 border border-sale hover:bg-white hover:text-sale transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .input-field {
-    @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow duration-200 bg-white;
+    @apply w-full px-3.5 py-2.5 border border-primary-200 text-ink placeholder-primary-300 bg-white focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink transition-colors duration-200;
   }
 
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+    @apply bg-white border border-primary-100 overflow-hidden;
   }
 
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2 py-0.5 text-[11px] font-medium uppercase tracking-wider;
+    border-radius: 0;
   }
 
   .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-10;
   }
 
   .section-title {
-    @apply text-2xl font-bold text-gray-900;
+    @apply font-display text-2xl md:text-3xl text-ink;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-medium uppercase tracking-[0.22em] text-primary-400;
   }
 }
 
-/* Simple typography for content pages */
-.prose-info h2 { @apply text-lg font-semibold text-gray-900 mt-8 mb-2; }
-.prose-info p { @apply text-gray-600 leading-relaxed mb-3; }
-.prose-info ul { @apply list-disc pl-5 space-y-1.5 text-gray-600 mb-3; }
-.prose-info a { @apply text-primary-600 underline hover:text-primary-700; }
-.prose-info code { @apply text-sm bg-gray-100 rounded px-1; }
+/* Headings are set in the display face, which only ships a regular weight */
+h1,
+h2 {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 400 !important;
+  letter-spacing: 0.01em;
+}
 
-/* Loading skeleton animation */
+/* Content pages */
+.prose-info h2 { @apply text-xl text-ink mt-8 mb-2; }
+.prose-info p { @apply text-primary-500 leading-relaxed mb-3; }
+.prose-info ul { @apply list-disc pl-5 space-y-1.5 text-primary-500 mb-3; }
+.prose-info a { @apply text-ink underline underline-offset-4 hover:text-primary-400; }
+.prose-info code { @apply text-sm bg-primary-50 px-1; }
+
+/* Loading placeholder */
 @keyframes shimmer {
   0% { background-position: -1000px 0; }
   100% { background-position: 1000px 0; }
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: linear-gradient(90deg, #f1efeb 25%, #e6e3dd 50%, #f1efeb 75%);
   background-size: 1000px 100%;
   animation: shimmer 2s infinite;
 }
 
-/* Star rating */
-.star-filled { color: #f59e0b; }
-.star-empty { color: #d1d5db; }
+.star-filled { color: #1f1d1a; }
+.star-empty { color: #dad6cf; }
 
-/* Product card hover */
 .product-card:hover .product-image {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
-/* Smooth transitions */
 .page-transition {
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.35s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition,
+  .skeleton {
+    animation: none;
+  }
 }

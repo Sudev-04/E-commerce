@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Package, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
+import { Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
 import { registerUser } from "@/lib/auth";
 import { useAuth } from "../../components/AuthProvider";
 
@@ -47,9 +47,8 @@ function RegisterForm() {
   return (
     <div className="card p-8">
       <div className="text-center mb-8">
-        <Link href="/" className="inline-flex items-center gap-2 text-primary-600 font-bold text-2xl mb-4">
-          <Package className="w-8 h-8" aria-hidden="true" />
-          ShopNext
+        <Link href="/" className="inline-block font-display text-2xl uppercase tracking-[0.3em] text-ink mb-5">
+          Northlane
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">Create your account</h1>
         <p className="text-gray-500 mt-1">Track orders and check out faster</p>

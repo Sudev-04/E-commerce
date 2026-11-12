@@ -3,8 +3,8 @@
 // role from the *signed* access token, never from a plain cookie.
 import { jwtVerify } from "jose";
 
-export const ACCESS_COOKIE = "sn_access";
-export const REFRESH_COOKIE = "sn_refresh";
+export const ACCESS_COOKIE = "northlane_at";
+export const REFRESH_COOKIE = "northlane_rt";
 
 export const BACKEND_URL = (
   process.env.BACKEND_URL ||
@@ -59,8 +59,8 @@ export async function verifyAccessToken(token: string | undefined): Promise<Sess
   if (!token || !secret) return null;
   try {
     const { payload } = await jwtVerify(token, secret, {
-      issuer: "ecommerce-api",
-      audience: "ecommerce-client",
+      issuer: "northlane-api",
+      audience: "northlane-web",
     });
     if (typeof payload.id !== "string" || (payload.role !== "user" && payload.role !== "admin")) {
       return null;

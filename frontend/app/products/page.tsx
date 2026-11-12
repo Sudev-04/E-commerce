@@ -38,10 +38,10 @@ export function generateMetadata({ searchParams }: PageProps): Metadata {
   return {
     title: pageTitle(searchParams),
     description: isDeals(searchParams)
-      ? "Today's Deals at ShopNext: extra 10–20% off and free delivery on hand-picked products. New deals every day."
+      ? "Today's Deals at Northlane: extra 10–20% off and free delivery on hand-picked products. New deals every day."
       : searchParams.category
-      ? `Shop ${formatCategory(searchParams.category)} at ShopNext. Free delivery on orders over ₹499.`
-      : "Browse the full ShopNext catalogue: electronics, fashion, home & kitchen, furniture, sports and accessories.",
+      ? `Shop ${formatCategory(searchParams.category)} at Northlane. Free delivery on orders over ₹499.`
+      : "Browse the full Northlane catalogue: electronics, fashion, home & kitchen, furniture, sports and accessories.",
   };
 }
 

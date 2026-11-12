@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Package } from "lucide-react";
 
 const SECTIONS = [
   {
@@ -35,13 +34,12 @@ const SECTIONS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-ink text-primary-200 mt-16">
-      <div className="page-container py-12">
+    <footer className="bg-ink text-primary-300 mt-20">
+      <div className="page-container py-14">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 text-white font-bold text-xl mb-3">
-              <Package className="w-6 h-6 text-accent-400" aria-hidden="true" />
-              ShopNext
+            <Link href="/" className="inline-block font-display text-xl uppercase tracking-[0.3em] text-white mb-4">
+              Northlane
             </Link>
             <p className="text-sm leading-relaxed">
               Electronics, fashion, home essentials and more, delivered across India. Free delivery on orders over ₹499.
@@ -49,7 +47,7 @@ export default function Footer() {
           </div>
           {SECTIONS.map(({ title, links }) => (
             <div key={title}>
-              <h2 className="text-white font-semibold mb-3">{title}</h2>
+              <h2 className="!font-sans text-[11px] uppercase tracking-[0.22em] text-white mb-4">{title}</h2>
               <ul className="space-y-2 text-sm">
                 {links.map(([label, href]) => (
                   <li key={label}>
@@ -60,8 +58,8 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="border-t border-white/10 mt-10 pt-6 text-sm text-center">
-          © {new Date().getFullYear()} ShopNext. All rights reserved.
+        <div className="border-t border-white/10 mt-10 pt-6 text-xs tracking-wide text-center">
+          © {new Date().getFullYear()} Northlane. All rights reserved.
         </div>
       </div>
     </footer>

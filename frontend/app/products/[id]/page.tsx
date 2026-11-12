@@ -101,7 +101,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <div>
             <div className="flex flex-wrap items-baseline gap-3">
-              <span className="text-4xl font-extrabold text-gray-900">{formatPrice(product.price)}</span>
+              <span className="text-3xl font-medium text-ink">{formatPrice(product.price)}</span>
               {discount > 0 && (
                 <>
                   <span className="text-xl text-gray-400 line-through"><span className="sr-only">MRP </span>{formatPrice(product.originalPrice)}</span>

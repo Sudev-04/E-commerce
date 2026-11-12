@@ -3,7 +3,7 @@ import InfoPage from "../components/InfoPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How ShopNext collects, uses and protects your personal information.",
+  description: "How Northlane collects, uses and protects your personal information.",
 };
 
 export default function Page() {
