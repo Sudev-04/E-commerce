@@ -14,7 +14,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://northlane-store.vercel.app
+        value: https://northlane-shop.vercel.app
       - key: JWT_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
