@@ -101,8 +101,8 @@ export default function Navbar() {
           </div>
 
           {/* Wordmark */}
-          <Link href="/" className="font-display text-xl sm:text-2xl uppercase tracking-[0.3em] text-ink pl-[0.3em]">
-            Northlane
+          <Link href="/" className="font-display text-lg sm:text-2xl uppercase tracking-[0.22em] sm:tracking-[0.3em] text-ink pl-[0.22em] sm:pl-[0.3em]">
+            IndiBazaar
           </Link>
 
           {/* Right: account and cart */}

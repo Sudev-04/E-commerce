@@ -3,14 +3,14 @@ import InfoPage from "../components/InfoPage";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description: "Northlane is an online store for electronics, fashion, home & kitchen, furniture, sports and accessories.",
+  description: "IndiBazaar is an online store for electronics, fashion, home & kitchen, furniture, sports and accessories.",
 };
 
 export default function Page() {
   return (
     <InfoPage title="About Us">
       <p>
-        Northlane is an online store for everyday essentials and things you&apos;ll love: electronics, fashion,
+        IndiBazaar is an online store for everyday essentials and things you&apos;ll love: electronics, fashion,
         home &amp; kitchen, furniture, sports gear and accessories, all in one place.
       </p>
       <h2>What we stand for</h2>
@@ -21,7 +21,7 @@ export default function Page() {
         <li><strong>Flexible payment:</strong> UPI, cards or cash on delivery.</li>
       </ul>
       <p>
-        Northlane is a demonstration project built as a full-stack e-commerce application. Orders placed
+        IndiBazaar is a demonstration project built as a full-stack e-commerce application. Orders placed
         here are not fulfilled and no payment is taken.
       </p>
     </InfoPage>

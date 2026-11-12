@@ -39,7 +39,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="inline-block font-display text-xl uppercase tracking-[0.3em] text-white mb-4">
-              Northlane
+              IndiBazaar
             </Link>
             <p className="text-sm leading-relaxed">
               Electronics, fashion, home essentials and more, delivered across India. Free delivery on orders over ₹499.
@@ -59,7 +59,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="border-t border-white/10 mt-10 pt-6 text-xs tracking-wide text-center">
-          © {new Date().getFullYear()} Northlane. All rights reserved.
+          © {new Date().getFullYear()} IndiBazaar. All rights reserved.
         </div>
       </div>
     </footer>

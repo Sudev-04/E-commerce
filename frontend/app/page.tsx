@@ -86,7 +86,7 @@ async function Hero() {
     <section className="border-b border-primary-100">
       <div className="page-container grid md:grid-cols-2 gap-10 lg:gap-16 items-center py-12 md:py-20">
         <div>
-          <p className="eyebrow mb-5">The Northlane edit</p>
+          <p className="eyebrow mb-5">The IndiBazaar edit</p>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl leading-[1.08] text-ink">
             Well-made things for everyday living.
           </h1>
@@ -268,7 +268,7 @@ export default function HomePage() {
       {/* Account prompt */}
       <section className="py-20">
         <div className="page-container text-center">
-          <p className="eyebrow mb-3">Join Northlane</p>
+          <p className="eyebrow mb-3">Join IndiBazaar</p>
           <h2 className="text-3xl md:text-4xl text-ink mb-4">Keep track of every order.</h2>
           <p className="text-primary-500 mb-9 max-w-md mx-auto">Create a free account to follow your orders and check out faster.</p>
           <Link href="/auth/register" className="btn-primary px-10 py-4 inline-block">Create an account</Link>

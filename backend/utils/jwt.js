@@ -16,30 +16,30 @@ const getSecret = (name) => {
 const generateAccessToken = (payload) => {
   return jwt.sign(payload, getSecret("JWT_SECRET"), {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-    issuer: "northlane-api",
-    audience: "northlane-web",
+    issuer: "indibazaar-api",
+    audience: "indibazaar-web",
   });
 };
 
 const generateRefreshToken = (payload) => {
   return jwt.sign(payload, getSecret("JWT_REFRESH_SECRET"), {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
-    issuer: "northlane-api",
-    audience: "northlane-web",
+    issuer: "indibazaar-api",
+    audience: "indibazaar-web",
   });
 };
 
 const verifyAccessToken = (token) => {
   return jwt.verify(token, getSecret("JWT_SECRET"), {
-    issuer: "northlane-api",
-    audience: "northlane-web",
+    issuer: "indibazaar-api",
+    audience: "indibazaar-web",
   });
 };
 
 const verifyRefreshToken = (token) => {
   return jwt.verify(token, getSecret("JWT_REFRESH_SECRET"), {
-    issuer: "northlane-api",
-    audience: "northlane-web",
+    issuer: "indibazaar-api",
+    audience: "indibazaar-web",
   });
 };
 

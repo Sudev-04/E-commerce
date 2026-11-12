@@ -23,7 +23,7 @@ interface CartContextType {
 
 type Notice = { type: "success" | "error"; message: string; showCartLink?: boolean };
 
-const GUEST_KEY = "northlane_cart";
+const GUEST_KEY = "indibazaar_cart";
 const emptyCart: Cart = { items: [], total: 0, updatedAt: null };
 
 const CartContext = createContext<CartContextType>({

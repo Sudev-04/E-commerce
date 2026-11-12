@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-// Northlane theme: near-black ink on warm white, a single bronze accent,
+// IndiBazaar theme: near-black ink on warm white, a single bronze accent,
 // square corners throughout. Red is kept for price reductions only.
 const config: Config = {
   content: [

@@ -1,4 +1,4 @@
-# Render Blueprint for the Northlane backend (Express API).
+# Render Blueprint for the IndiBazaar backend (Express API).
 # Render → New → Blueprint → select this repo. You'll be asked for JWT_SECRET:
 # use the same value as JWT_SECRET in the Vercel (frontend) project.
 services:

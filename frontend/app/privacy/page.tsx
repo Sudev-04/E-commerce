@@ -3,7 +3,7 @@ import InfoPage from "../components/InfoPage";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "How Northlane collects, uses and protects your personal information.",
+  description: "How IndiBazaar collects, uses and protects your personal information.",
 };
 
 export default function Page() {

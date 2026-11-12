@@ -10,7 +10,7 @@ const body = Jost({ subsets: ["latin"], variable: "--font-body", display: "swap"
 const display = Marcellus({ subsets: ["latin"], weight: "400", variable: "--font-display", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Northlane | Electronics, Fashion, Home & More", template: "%s | Northlane" },
+  title: { default: "IndiBazaar | Electronics, Fashion, Home & More", template: "%s | IndiBazaar" },
   description:
     "Shop electronics, fashion, furniture, home & kitchen, sports and accessories at great prices. Free delivery on orders over ₹499 and easy 30-day returns.",
   keywords: ["online shopping", "electronics", "fashion", "home and kitchen", "furniture", "india"],
