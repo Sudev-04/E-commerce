@@ -3,7 +3,7 @@
 # use the same value as JWT_SECRET in the Vercel (frontend) project.
 services:
   - type: web
-    name: shopnext-online-api
+    name: northlane-api
     runtime: node
     plan: free
     rootDir: backend
@@ -14,7 +14,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://shopnext-online.vercel.app
+        value: https://northlane-store.vercel.app
       - key: JWT_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
