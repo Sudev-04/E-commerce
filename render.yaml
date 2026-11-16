@@ -14,7 +14,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: FRONTEND_URL
-        value: https://northlane-shop.vercel.app
+        value: https://indibazaar.vercel.app
       - key: JWT_SECRET
         sync: false
       # MongoDB Atlas connection link; set it in the Render dashboard
