@@ -12,6 +12,7 @@ const cartRoutes = require("./routes/cart");
 const orderRoutes = require("./routes/orders");
 const { errorHandler, notFound } = require("./middleware/errorMiddleware");
 const { requestLogger } = require("./middleware/loggerMiddleware");
+const persist = require("./models/persist");
 
 const app = express();
 
@@ -25,6 +26,17 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// ─── Saving to MongoDB ──────────────────────────────────────────────────────
+// Any successful change (sign-up, cart, order, admin edit…) triggers a save.
+app.use((req, res, next) => {
+  if (!["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    res.on("finish", () => {
+      if (res.statusCode < 400) persist.scheduleSave();
+    });
+  }
+  next();
+});
 
 // ─── Rate Limiting ──────────────────────────────────────────────────────────
 // Browser traffic reaches this API through the Next.js server (BFF proxy), so every
@@ -87,10 +99,23 @@ app.use(errorHandler);
 
 // ─── Start Server ───────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📦 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🔗 Frontend: ${process.env.FRONTEND_URL}\n`);
-});
+persist
+  .connect()
+  .catch((err) => console.error("💾 Could not connect to MongoDB, running from memory only:", err.message))
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+      console.log(`📦 Environment: ${process.env.NODE_ENV}`);
+      console.log(`🔗 Frontend: ${process.env.FRONTEND_URL}\n`);
+    });
+  });
+
+// Save any last changes before Render stops the server
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.on(signal, async () => {
+    await persist.flush();
+    process.exit(0);
+  });
+}
 
 module.exports = app;

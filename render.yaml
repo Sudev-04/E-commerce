@@ -17,6 +17,9 @@ services:
         value: https://northlane-shop.vercel.app
       - key: JWT_SECRET
         sync: false
+      # MongoDB Atlas connection link; set it in the Render dashboard
+      - key: MONGODB_URI
+        sync: false
       - key: JWT_REFRESH_SECRET
         generateValue: true
       # Private admin password; set it in the Render dashboard (Environment)

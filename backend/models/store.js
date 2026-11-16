@@ -367,4 +367,32 @@ const store = {
   },
 };
 
+// ─── Saved copy (see models/persist.js) ──────────────────────────────────────
+const adminSeedPassword = users.find((u) => u.id === "user-1").password;
+
+store.exportData = () => ({
+  users,
+  products,
+  carts: Object.entries(carts),
+  orders,
+  refreshTokens: [...refreshTokens],
+});
+
+store.importData = (data) => {
+  if (Array.isArray(data.users)) users.splice(0, users.length, ...data.users);
+  if (Array.isArray(data.products)) products.splice(0, products.length, ...data.products);
+  if (Array.isArray(data.orders)) orders.splice(0, orders.length, ...data.orders);
+  if (Array.isArray(data.carts)) {
+    for (const key of Object.keys(carts)) delete carts[key];
+    for (const [userId, cart] of data.carts) carts[userId] = cart;
+  }
+  if (Array.isArray(data.refreshTokens)) {
+    refreshTokens.clear();
+    data.refreshTokens.forEach((t) => refreshTokens.add(t));
+  }
+  // The admin password always comes from ADMIN_PASSWORD, not the saved copy
+  const admin = users.find((u) => u.id === "user-1");
+  if (admin) admin.password = adminSeedPassword;
+};
+
 module.exports = store;
